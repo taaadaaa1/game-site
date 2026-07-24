@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>タワービルド - PIXEL PARK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Zen+Maru+Gothic:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f1016;
+            --card-bg: #1a1c26;
+            --accent-pink: #ff3366;
+            --accent-cyan: #00f0ff;
+            --text-main: #ffffff;
+            --text-sub: #8b8fa3;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        header {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .score-board {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 360px;
+            height: 58vh;
+            background-color: var(--card-bg);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .control-area {
+            width: 100%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-cyan), #0077ff);
+            color: #000;
+            font-weight: 900;
+            font-size: 1.1rem;
+            padding: 16px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
+            text-align: center;
+        }
+
+        .action-btn:active {
+            transform: scale(0.97);
+        }
+
+        .back-link {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            text-decoration: none;
+            text-align: center;
+        }
+        .back-link:hover {
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>タワービルド</h1>
+        <div class="score-board">高さ: <span id="score">0</span>段</div>
+    </header>
+
+    <div class="game-container">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-area">
+        <button class="action-btn" id="actionBtn" onclick="tapAction()">タップして積む</button>
+        <a href="../index.html" class="back-link">&larr; ポータルに戻る</a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        const actionBtn = document.getElementById('actionBtn');
+
+        canvas.width = 360;
+        canvas.height = 500;
+
+        let towers = [];
+        let currentBlock = {};
+        let score = 0;
+        let gameState = 'start';
+        let cameraY = 0;
+
+        const blockHeight = 30;
+        const initialWidth = 140;
+
+        function initGame() {
+            towers = [];
+            score = 0;
+            cameraY = 0;
+            scoreEl.textContent = score;
+
+            towers.push({
+                x: canvas.width / 2 - initialWidth / 2,
+                y: canvas.height - 50,
+                width: initialWidth,
+                color: '#00f0ff'
+            });
+
+            spawnBlock();
+            gameState = 'playing';
+            actionBtn.textContent = 'ストップ！';
+        }
+
+        function spawnBlock() {
+            const lastTower = towers[towers.length - 1];
+            const colors = ['#00f0ff', '#ff3366', '#7000ff', '#00ff66', '#ffcc00'];
+            const nextColor = colors[towers.length % colors.length];
+
+            currentBlock = {
+                x: 0,
+                y: lastTower.y - blockHeight,
+                width: lastTower.width,
+                speed: 3 + Math.min(towers.length * 0.2, 8),
+                direction: 1,
+                color: nextColor
+            };
+        }
+
+        function tapAction() {
+            if (gameState === 'start' || gameState === 'gameover') {
+                initGame();
+                return;
+            }
+
+            if (gameState === 'playing') {
+                const lastTower = towers[towers.length - 1];
+                let overlapLeft = Math.max(currentBlock.x, lastTower.x);
+                let overlapRight = Math.min(currentBlock.x + currentBlock.width, lastTower.x + lastTower.width);
+                let overlapWidth = overlapRight - overlapLeft;
+
+                if (overlapWidth <= 0) {
+                    gameState = 'gameover';
+                    actionBtn.textContent = 'リトライ（もう一度）';
+                    return;
+                }
+
+                currentBlock.x = overlapLeft;
+                currentBlock.width = overlapWidth;
+
+                towers.push({ ...currentBlock });
+                score++;
+                scoreEl.textContent = score;
+
+                if (towers.length > 5) {
+                    cameraY += blockHeight;
+                }
+
+                spawnBlock();
+            }
+        }
+
+        function update() {
+            if (gameState === 'playing') {
+                currentBlock.x += currentBlock.speed * currentBlock.direction;
+                if (currentBlock.x <= 0 || currentBlock.x + currentBlock.width >= canvas.width) {
+                    currentBlock.direction *= -1;
+                }
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            ctx.translate(0, cameraY);
+
+            towers.forEach((t) => {
+                ctx.fillStyle = t.color;
+                ctx.fillRect(t.x, t.y, t.width, blockHeight);
+                ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                ctx.fillRect(t.x, t.y, t.width, 6);
+            });
+
+            if (gameState === 'playing') {
+                ctx.fillStyle = currentBlock.color;
+                ctx.fillRect(currentBlock.x, currentBlock.y, currentBlock.width, blockHeight);
+                ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                ctx.fillRect(currentBlock.x, currentBlock.y, currentBlock.width, 6);
+            }
+
+            ctx.restore();
+
+            if (gameState === 'gameover') {
+                ctx.fillStyle = 'rgba(15, 16, 22, 0.85)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 24px Outfit, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 20);
+
+                ctx.fillStyle = '#8b8fa3';
+                ctx.font = '16px Outfit, sans-serif';
+                ctx.fillText(`スコア: ${score} 段`, canvas.width / 2, canvas.height / 2 + 20);
+            } else if (gameState === 'start') {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 20px Outfit, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('タップしてスタート', canvas.width / 2, canvas.height / 2);
+            }
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
+</body>
+</html>
