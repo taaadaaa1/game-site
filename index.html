@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIXEL PARARK - 毎日変わるミニゲーム</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Zen+Maru+Gothic:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f1016;
+            --card-bg: #1a1c26;
+            --accent-pink: #ff3366;
+            --accent-cyan: #00f0ff;
+            --text-main: #ffffff;
+            --text-sub: #8b8fa3;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .site-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .site-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+        }
+
+        main {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 本日のゲームカード */
+        .game-card {
+            background-color: var(--card-bg);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .badge {
+            align-self: flex-start;
+            background: var(--accent-pink);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+        }
+
+        .game-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .game-desc {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            line-height: 1.5;
+        }
+
+        /* プレイボタン */
+        .play-btn {
+            background: linear-gradient(135deg, var(--accent-cyan), #0077ff);
+            color: #000;
+            font-weight: 900;
+            font-size: 1rem;
+            text-align: center;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.1s ease, opacity 0.1s ease;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
+        }
+
+        .play-btn:active {
+            transform: scale(0.97);
+            opacity: 0.9;
+        }
+
+        /* 過去作セクション */
+        .archive-section {
+            margin-top: 10px;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            color: var(--text-sub);
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .archive-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .archive-item {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 14px 18px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .archive-item:hover {
+            border-color: var(--accent-cyan);
+        }
+
+        .archive-date {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 class="site-title">PIXEL PARK</h1>
+        <p class="site-subtitle">広告なし・純度100%の暇つぶしゲーム</p>
+    </header>
+
+    <main>
+        <section class="game-card">
+            <span class="badge">TODAY'S GAME</span>
+            <div>
+                <h2 class="game-title">10秒ストップ！</h2>
+                <p class="game-desc">画面をタップしてスタート。ぴったり10秒だと思った瞬間にストップ！反射神経と体内時計の限界に挑め。</p>
+            </div>
+            <a href="#" class="play-btn">今すぐ遊ぶ（LOAD GAME）</a>
+        </section>
+
+        <section class="archive-section">
+            <h3 class="section-title">PAST GAMES</h3>
+            <div class="archive-list">
+                <div class="archive-item">
+                    <span>タワービルド（仮）</span>
+                    <span class="archive-date">07.24</span>
+                </div>
+                <div class="archive-item">
+                    <span>スライムジャンプ（仮）</span>
+                    <span class="archive-date">07.23</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 PIXEL PARK. All rights reserved (No Ads).</p>
+    </footer>
+
+</body>
+</html>
