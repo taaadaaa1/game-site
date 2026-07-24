@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>目押しスロット - PIXEL PARK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Zen+Maru+Gothic:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f1016;
+            --card-bg: #1a1c26;
+            --accent-pink: #ff3366;
+            --accent-cyan: #00f0ff;
+            --text-main: #ffffff;
+            --text-sub: #8b8fa3;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 360px;
+            background-color: var(--card-bg);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .instructions {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        /* スロットマシン本体 */
+        .slot-machine {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .reel {
+            flex: 1;
+            height: 90px;
+            background-color: #11131c;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            font-size: 2.2rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.6);
+        }
+
+        .reel.stopped {
+            border-color: var(--accent-cyan);
+        }
+
+        /* 操作パネル・ボタン */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-cyan), #0077ff);
+            color: #000;
+            font-weight: 900;
+            font-size: 1.1rem;
+            padding: 16px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
+            transition: transform 0.05s ease;
+        }
+
+        .action-btn:active {
+            transform: scale(0.97);
+        }
+
+        .action-btn.stop-btn {
+            background: linear-gradient(135deg, var(--accent-pink), #ff0055);
+            box-shadow: 0 4px 20px rgba(255, 51, 102, 0.3);
+            color: #fff;
+        }
+
+        .result-area {
+            margin-top: 16px;
+            font-size: 1rem;
+            font-weight: 700;
+            min-height: 1.5em;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>目押しスロット</h1>
+        <p class="instructions">リールを回転させて「7」を狙え！左右のリールを順に止めろ！</p>
+
+        <div class="slot-machine">
+            <div class="reel" id="reel0">7</div>
+            <div class="reel" id="reel1">7</div>
+            <div class="reel" id="reel2">7</div>
+        </div>
+
+        <div class="btn-group">
+            <button class="action-btn" id="actionBtn" onclick="handleAction()">スピン開始</button>
+        </div>
+
+        <div class="result-area" id="resultText"></div>
+
+        <a href="../index.html" class="back-link">&larr; ポータルに戻る</a>
+    </div>
+
+    <script>
+        const symbols = ['🍒', '🔔', '🍉', '⭐', '7️⃣'];
+        
+        let reelValues = [0, 1, 2];
+        let reelStates = ['idle', 'idle', 'idle']; // 'idle', 'spinning', 'stopped'
+        let intervals = [null, null, null];
+        let currentStopIndex = 0; // 何番目を止めようとしているか
+
+        const actionBtn = document.getElementById('actionBtn');
+        const resultText = document.getElementById('resultText');
+
+        function handleAction() {
+            const allIdle = reelStates.every(s => s === 'idle');
+            const allStopped = reelStates.every(s => s === 'stopped');
+
+            if (allIdle || allStopped) {
+                // スピンスタート
+                startSpin();
+            } else {
+                // 目押しストップ
+                stopReel(currentStopIndex);
+            }
+        }
+
+        function startSpin() {
+            resultText.textContent = '';
+            currentStopIndex = 0;
+            
+            for (let i = 0; i < 3; i++) {
+                reelStates[i] = 'spinning';
+                document.getElementById(`reel${i}`).classList.remove('stopped');
+                
+                // それぞれ速度やランダム感を出すために少し変化を付ける
+                const speed = 60 + i * 15; 
+                intervals[i] = setInterval(() => {
+                    reelValues[i] = Math.floor(Math.random() * symbols.length);
+                    document.getElementById(`reel${i}`).textContent = symbols[reelValues[i]];
+                }, speed);
+            }
+
+            actionBtn.textContent = '1つ目を止める！';
+            actionBtn.classList.add('stop-btn');
+        }
+
+        function stopReel(index) {
+            if (reelStates[index] !== 'spinning') return;
+
+            clearInterval(intervals[index]);
+            reelStates[index] = 'stopped';
+            document.getElementById(`reel${index}`).classList.add('stopped');
+
+            currentStopIndex++;
+
+            if (currentStopIndex === 1) {
+                actionBtn.textContent = '2つ目を止める！';
+            } else if (currentStopIndex === 2) {
+                actionBtn.textContent = '3つ目を止める！';
+            } else {
+                // 全て止まった！判定
+                checkResult();
+            }
+        }
+
+        function checkResult() {
+            actionBtn.textContent = 'もう一度スピンする';
+            actionBtn.classList.remove('stop-btn');
+
+            const [r0, r1, r2] = reelValues;
+
+            if (r0 === 4 && r1 === 4 && r2 === 4) {
+                resultText.textContent = "🎉 大当たり！トリプル7達成！！ 🎉";
+                resultText.style.color = "var(--accent-cyan)";
+            } else if (r0 === r1 && r1 === r2) {
+                resultText.textContent = "✨ お見事！絵柄が揃いました！ ✨";
+                resultText.style.color = "#00ff66";
+            } else {
+                resultText.textContent = "ざんねん！もう一度挑戦しよう！";
+                resultText.style.color = "var(--accent-pink)";
+            }
+        }
+    </script>
+</body>
+</html>
