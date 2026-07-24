@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>10秒ストップ！ - PIXEL PARK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Zen+Maru+Gothic:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f1016;
+            --card-bg: #1a1c26;
+            --accent-pink: #ff3366;
+            --accent-cyan: #00f0ff;
+            --text-main: #ffffff;
+            --text-sub: #8b8fa3;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 360px;
+            background-color: var(--card-bg);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .instructions {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        .timer-display {
+            font-size: 3.5rem;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 24px;
+            letter-spacing: 0.02em;
+        }
+
+        .game-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-cyan), #0077ff);
+            color: #000;
+            font-weight: 900;
+            font-size: 1.1rem;
+            padding: 18px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
+            transition: transform 0.05s ease;
+        }
+
+        .game-btn:active {
+            transform: scale(0.97);
+        }
+
+        .game-btn.stop {
+            background: linear-gradient(135deg, var(--accent-pink), #ff0055);
+            box-shadow: 0 4px 20px rgba(255, 51, 102, 0.3);
+            color: #fff;
+        }
+
+        .result-area {
+            margin-top: 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            min-height: 1.5em;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 24px;
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>10秒ストップ！</h1>
+        <p class="instructions">「スタート」を押して、ぴったり10.00秒で「ストップ」を押そう！</p>
+
+        <div class="timer-display" id="timer">00.00</div>
+
+        <button class="game-btn" id="actionBtn" onclick="handleClick()">スタート</button>
+
+        <div class="result-area" id="resultText"></div>
+
+        <a href="../index.html" class="back-link">&larr; ポータルに戻る</a>
+    </div>
+
+    <script>
+        let startTime = 0;
+        let timerInterval = null;
+        let gameState = 'init';
+
+        const timerDisplay = document.getElementById('timer');
+        const actionBtn = document.getElementById('actionBtn');
+        const resultText = document.getElementById('resultText');
+
+        function handleClick() {
+            if (gameState === 'init' || gameState === 'stopped') {
+                startTime = Date.now();
+                gameState = 'running';
+                actionBtn.textContent = 'ストップ！';
+                actionBtn.classList.add('stop');
+                resultText.textContent = '';
+
+                timerInterval = setInterval(() => {
+                    const elapsed = (Date.now() - startTime) / 1000;
+                    timerDisplay.textContent = elapsed.toFixed(2);
+                }, 10);
+
+            } else if (gameState === 'running') {
+                clearInterval(timerInterval);
+                gameState = 'stopped';
+                
+                const endTime = (Date.now() - startTime) / 1000;
+                timerDisplay.textContent = endTime.toFixed(2);
+
+                const diff = Math.abs(10.00 - endTime);
+                
+                if (diff === 0) {
+                    resultText.textContent = "神！ぴったり10秒！✨";
+                    resultText.style.color = "var(--accent-cyan)";
+                } else if (diff <= 0.1) {
+                    resultText.textContent = `惜しい！ 誤差 ${diff.toFixed(2)}秒（神業）`;
+                    resultText.style.color = "#00ff66";
+                } else if (diff <= 0.5) {
+                    resultText.textContent = `お見事！ 誤差 ${diff.toFixed(2)}秒`;
+                    resultText.style.color = "var(--accent-cyan)";
+                } else {
+                    resultText.textContent = `誤差 ${diff.toFixed(2)}秒…どんまい！`;
+                    resultText.style.color = "var(--accent-pink)";
+                }
+
+                actionBtn.textContent = 'もう一度挑戦する';
+                actionBtn.classList.remove('stop');
+            }
+        }
+    </script>
+</body>
+</html>
