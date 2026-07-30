@@ -3,207 +3,342 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>暇つぶしゲームパーク</title>
+    <title>LEAF ARCADE ｜ ネイチャー・ミニゲームパーク</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent: #38bdf8;
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
+            --bg-color: #08120e;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #112a20 0%, #08120e 70%);
+            --card-bg: rgba(20, 41, 31, 0.7);
+            --card-border: rgba(34, 197, 94, 0.15);
+            --card-hover-border: rgba(34, 197, 94, 0.5);
+            --accent: #22c55e;
+            --accent-glow: rgba(34, 197, 94, 0.25);
+            --text-main: #f0fdf4;
+            --text-sub: #86efac;
+            --text-muted: #64748b;
         }
-        body {
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
+        }
+
+        body {
             background-color: var(--bg-color);
+            background-image: var(--bg-gradient);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            justify-content: space-between;
+            padding: 32px 16px;
+            -webkit-tap-highlight-color: transparent;
         }
+
+        .wrapper {
+            width: 100%;
+            max-width: 900px; /* PCでも広がりすぎず綺麗に見える幅 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
+        }
+
         header {
             text-align: center;
-            padding: 40px 20px 20px;
+            padding: 10px 20px;
         }
+
+        .badge-nature {
+            display: inline-block;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            letter-spacing: 0.05em;
+        }
+
         h1 {
-            font-size: 1.5rem;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 900;
             margin: 0 0 8px;
-            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            background: linear-gradient(135deg, #f0fdf4 30%, #4ade80 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
         }
+
         p.subtitle {
             color: var(--text-sub);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             margin: 0;
+            font-weight: 400;
+        }
+
+        /* メインコンテンツのレイアウト（PCでは2カラム、スマホでは1カラム） */
+        .main-content {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                grid-template-columns: 380px 1fr;
+                align-items: start;
+            }
         }
 
         /* 🤖 AIゲーム生成コントローラーボックス */
         .ai-generator-box {
-            width: 90%;
-            max-width: 400px;
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            border: 1px solid #38bdf855;
-            border-radius: 16px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.1);
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: border-color 0.3s;
         }
+
+        .ai-generator-box:hover {
+            border-color: var(--card-hover-border);
+        }
+
         .ai-generator-box h2 {
-            font-size: 1rem;
-            margin: 0 0 12px;
-            color: var(--accent);
+            font-size: 1.05rem;
+            margin: 0 0 16px;
+            color: #4ade80;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            font-weight: 700;
         }
+
         .ai-input-group {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
+
         .ai-input-group input {
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: #0f172a;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(10, 22, 17, 0.8);
             color: white;
             font-size: 0.95rem;
             outline: none;
+            transition: all 0.2s;
         }
+
         .ai-input-group input:focus {
             border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
         }
         
-        /* ボタン並び（おまかせ ＋ 生成） */
         .btn-row {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
+
         .btn-row button {
-            padding: 12px;
-            border-radius: 8px;
+            padding: 12px 16px;
+            border-radius: 12px;
             border: none;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 0.9rem;
             cursor: pointer;
-            transition: opacity 0.2s, transform 0.1s;
+            transition: all 0.2s ease;
         }
+
         #randomBtn {
-            background: #334155;
-            color: #f8fafc;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
             flex: 1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
+        #randomBtn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
         #generateBtn {
-            background: linear-gradient(90deg, #38bdf8, #6366f1);
-            color: white;
-            flex: 2;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #052e16;
+            flex: 1.5;
+            box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
         }
+
+        #generateBtn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+        }
+
         .btn-row button:active {
-            opacity: 0.8;
-            transform: scale(0.98);
+            transform: scale(0.97);
         }
+
         .status-msg {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-sub);
-            text-align: center;
-            margin-top: 10px;
-            min-height: 1.2em;
+            margin-top: 14px;
+            min-height: 1.4em;
+            line-height: 1.4;
         }
 
         /* 既存ゲーム一覧エリア */
         .container {
-            width: 90%;
-            max-width: 400px;
-            padding: 10px 0 40px;
             display: flex;
             flex-direction: column;
             gap: 16px;
+            width: 100%;
         }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .game-card {
-            background-color: var(--card-bg);
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
             border-radius: 16px;
-            padding: 16px 20px;
+            padding: 18px 22px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             text-decoration: none;
             color: inherit;
-            transition: transform 0.1s, background-color 0.2s;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
+
+        .game-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--card-hover-border);
+            background: rgba(25, 52, 39, 0.8);
+            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.15);
+        }
+
         .game-card:active {
-            transform: scale(0.97);
-            background-color: #273449;
+            transform: scale(0.98);
         }
+
         .game-info h3 {
             margin: 0 0 4px;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
         }
+
         .game-info p {
             margin: 0;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-sub);
         }
+
         .play-btn {
             background-color: var(--accent);
-            color: #0f172a;
-            padding: 8px 16px;
+            color: #052e16;
+            padding: 8px 18px;
             border-radius: 20px;
-            font-weight: bold;
+            font-weight: 800;
             font-size: 0.85rem;
+            box-shadow: 0 2px 10px rgba(34, 197, 94, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .game-card:hover .play-btn {
+            transform: scale(1.05);
+            background-color: #4ade80;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            padding: 20px 0 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>⚡ 暇つぶしゲームパーク</h1>
-        <p class="subtitle">広告なし・超軽量のスキマ時間ゲーム</p>
-    </header>
+    <div class="wrapper">
+        <header>
+            <div class="badge-nature">🌿 ECO & NATURE GAMING</div>
+            <h1>LEAF ARCADE</h1>
+            <p class="subtitle">広告なし・超軽量の癒やし系スキマ時間ゲームパーク</p>
+        </header>
 
-    <div class="ai-generator-box">
-        <h2>✨ AIに新しいゲームを作らせる</h2>
-        <div class="ai-input-group">
-            <input type="text" id="gameIdeaInput" placeholder="例：ブロック崩し、神経衰弱など">
-            <div class="btn-row">
-                <button id="randomBtn" onclick="insertRandomIdea()">🎲 おまかせ</button>
-                <button id="generateBtn" onclick="requestNewGame()">生成・追加</button>
+        <div class="main-content">
+            <div class="ai-generator-box">
+                <h2>✨ AIに新しいゲームを作る</h2>
+                <div class="ai-input-group">
+                    <input type="text" id="gameIdeaInput" placeholder="例：ブロック崩し、神経衰弱など">
+                    <div class="btn-row">
+                        <button id="randomBtn" onclick="insertRandomIdea()">🎲 おまかせ</button>
+                        <button id="generateBtn" onclick="requestNewGame()">生成・追加</button>
+                    </div>
+                </div>
+                <div id="statusMsg" class="status-msg"></div>
+            </div>
+
+            <div class="container" id="gameListContainer">
+                <div class="section-title">🎮 プレイ可能なゲーム</div>
+                
+                <a href="games/tower.html" class="game-card">
+                    <div class="game-info">
+                        <h3>タワービルド</h3>
+                        <p>タイミングよくブロックを積もう</p>
+                    </div>
+                    <div class="play-btn">PLAY</div>
+                </a>
+
+                <a href="games/stopwatch.html" class="game-card">
+                    <div class="game-info">
+                        <h3>10秒ストップ！</h3>
+                        <p>ぴったり10秒で止めろ</p>
+                    </div>
+                    <div class="play-btn">PLAY</div>
+                </a>
             </div>
         </div>
-        <div id="statusMsg" class="status-msg"></div>
-    </div>
 
-    <div class="container" id="gameListContainer">
-        <a href="games/tower.html" class="game-card">
-            <div class="game-info">
-                <h3>タワービルド</h3>
-                <p>タイミングよくブロックを積もう</p>
-            </div>
-            <div class="play-btn">PLAY</div>
-        </a>
-
-        <a href="games/stopwatch.html" class="game-card">
-            <div class="game-info">
-                <h3>10秒ストップ！</h3>
-                <p>ぴったり10秒で止めろ</p>
-            </div>
-            <div class="play-btn">PLAY</div>
-        </a>
+        <footer>
+            <p>&copy; 2026 LEAF ARCADE. All rights reserved.</p>
+        </footer>
     </div>
 
     <script>
-        // ランダム生成用のアイデアストック
         const randomIdeas = [
             "画面を連打してカエルを限界まで高く飛ばすジャンプゲーム",
-            "上から落ちてくる寿司ネタをひたすらシャリにスワイプで合わせるゲーム",
-            "左右から迫ってくる障害物を避けて猫を走らせるエンドレスラン",
+            "上から落ちてくる木の実をカゴでキャッチするバランスゲーム",
+            "左右から迫ってくる小動物を避けて森を駆け抜けるエンドレスラン",
             "1画面のシンプルなゴルフパター（カップに入れるだけ）",
-            "光ったパネルの順番を覚える記憶力テストゲーム",
-            "画面のどこかに隠れたお宝を制限時間内にタップで探す宝探し",
-            "落ちてくる隕石をタップして迎撃するミサイル防衛ゲーム"
+            "光った葉っぱの順番を覚える記憶力テストゲーム",
+            "森のどこかに隠れたお宝を制限時間内にタップで探す宝探し",
+            "落ちてくる枯れ葉をタップして綺麗にするお掃除ゲーム"
         ];
 
         function insertRandomIdea() {
@@ -226,7 +361,6 @@
             status.textContent = `🤖 「${idea}」を構築・デプロイ中...`;
 
             try {
-                // 将来的にVercel等のAPI (`/api/generate`) を繋ぐ場合のコード
                 const response = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -242,7 +376,6 @@
                     status.textContent = `❌ エラー: ${result.error || '処理に失敗しました'}`;
                 }
             } catch (e) {
-                // まだバックエンドAPIが未設定（デモ状態）の場合のフォールバック
                 setTimeout(() => {
                     status.textContent = "💡 バックエンドAPI未設定です（UIのモック動作中）";
                 }, 1000);
