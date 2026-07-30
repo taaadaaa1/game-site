@@ -3,153 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIXEL PARK - 暇つぶしゲームサイト</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Zen+Maru+Gothic:wght@700&display=swap" rel="stylesheet">
+    <title>暇つぶしゲームパーク</title>
     <style>
         :root {
-            --bg-color: #0f1016;
-            --card-bg: #1a1c26;
-            --accent-pink: #ff3366;
-            --accent-cyan: #00f0ff;
-            --text-main: #ffffff;
-            --text-sub: #8b8fa3;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
         }
-
-        * {
-            box-sizing: border-box;
+        body {
             margin: 0;
             padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 24px 20px;
+            min-height: 100vh;
         }
-
         header {
             text-align: center;
-            margin-bottom: 24px;
-            width: 100%;
-            max-width: 420px;
+            padding: 40px 20px 20px;
         }
-
-        .site-title {
-            font-size: 1.8rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+        h1 {
+            font-size: 1.5rem;
+            margin: 0 0 8px;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 6px;
         }
-
-        .site-subtitle {
-            font-size: 0.85rem;
+        p.subtitle {
             color: var(--text-sub);
+            font-size: 0.9rem;
+            margin: 0;
         }
 
-        main {
-            width: 100%;
-            max-width: 420px;
+        /* 🤖 AIゲーム生成コントローラーボックス */
+        .ai-generator-box {
+            width: 90%;
+            max-width: 400px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid #38bdf855;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.1);
+        }
+        .ai-generator-box h2 {
+            font-size: 1rem;
+            margin: 0 0 12px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ai-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .ai-input-group input {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .ai-input-group input:focus {
+            border-color: var(--accent);
+        }
+        
+        /* ボタン並び（おまかせ ＋ 生成） */
+        .btn-row {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-row button {
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        #randomBtn {
+            background: #334155;
+            color: #f8fafc;
+            flex: 1;
+        }
+        #generateBtn {
+            background: linear-gradient(90deg, #38bdf8, #6366f1);
+            color: white;
+            flex: 2;
+        }
+        .btn-row button:active {
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+        .status-msg {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            text-align: center;
+            margin-top: 10px;
+            min-height: 1.2em;
+        }
+
+        /* 既存ゲーム一覧エリア */
+        .container {
+            width: 90%;
+            max-width: 400px;
+            padding: 10px 0 40px;
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
-
         .game-card {
             background-color: var(--card-bg);
-            border: 2px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 16px;
+            padding: 16px 20px;
             display: flex;
-            flex-direction: column;
-            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             text-decoration: none;
-            color: var(--text-main);
-            transition: border-color 0.2s ease, transform 0.1s ease;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            color: inherit;
+            transition: transform 0.1s, background-color 0.2s;
         }
-
         .game-card:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
+            background-color: #273449;
         }
-
-        .game-card:hover {
-            border-color: var(--accent-cyan);
+        .game-info h3 {
+            margin: 0 0 4px;
+            font-size: 1.1rem;
         }
-
-        .game-info h2 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
         .game-info p {
-            font-size: 0.85rem;
+            margin: 0;
+            font-size: 0.8rem;
             color: var(--text-sub);
-            line-height: 1.4;
         }
-
-        .play-tag {
-            align-self: flex-start;
-            background: linear-gradient(135deg, var(--accent-cyan), #0077ff);
-            color: #000;
-            font-size: 0.75rem;
-            font-weight: 900;
-            padding: 6px 14px;
+        .play-btn {
+            background-color: var(--accent);
+            color: #0f172a;
+            padding: 8px 16px;
             border-radius: 20px;
-        }
-
-        footer {
-            margin-top: 40px;
-            font-size: 0.75rem;
-            color: var(--text-sub);
-            text-align: center;
+            font-weight: bold;
+            font-size: 0.85rem;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1 class="site-title">PIXEL PARK</h1>
-        <p class="site-subtitle">広告なし・純度100%の暇つぶしゲームポータル</p>
+        <h1>⚡ 暇つぶしゲームパーク</h1>
+        <p class="subtitle">広告なし・超軽量のスキマ時間ゲーム</p>
     </header>
 
-    <main>
-        <a href="./games/tower.html" class="game-card">
-            <div class="game-info">
-                <h2>タワービルド</h2>
-                <p>左右に揺れるブロックをタイミングよくタップして、どこまで高く積めるか競うアクション。</p>
+    <div class="ai-generator-box">
+        <h2>✨ AIに新しいゲームを作らせる</h2>
+        <div class="ai-input-group">
+            <input type="text" id="gameIdeaInput" placeholder="例：ブロック崩し、神経衰弱など">
+            <div class="btn-row">
+                <button id="randomBtn" onclick="insertRandomIdea()">🎲 おまかせ</button>
+                <button id="generateBtn" onclick="requestNewGame()">生成・追加</button>
             </div>
-            <span class="play-tag">遊ぶ &rarr;</span>
+        </div>
+        <div id="statusMsg" class="status-msg"></div>
+    </div>
+
+    <div class="container" id="gameListContainer">
+        <a href="games/tower.html" class="game-card">
+            <div class="game-info">
+                <h3>タワービルド</h3>
+                <p>タイミングよくブロックを積もう</p>
+            </div>
+            <div class="play-btn">PLAY</div>
         </a>
 
-        <a href="./games/stopwatch.html" class="game-card">
+        <a href="games/stopwatch.html" class="game-card">
             <div class="game-info">
-                <h2>10秒ストップ！</h2>
-                <p>スタートを押して、ぴったり10.00秒でストップを押せ！体内時計チャレンジ。</p>
+                <h3>10秒ストップ！</h3>
+                <p>ぴったり10秒で止めろ</p>
             </div>
-            <span class="play-tag">遊ぶ &rarr;</span>
+            <div class="play-btn">PLAY</div>
         </a>
+    </div>
 
-        <a href="./games/slot.html" class="game-card">
-            <div class="game-info">
-                <h2>目押しスロット</h2>
-                <p>回転するリールを自分のタイミングで止めろ！7を揃えて大当たりを狙え。</p>
-            </div>
-            <span class="play-tag">遊ぶ &rarr;</span>
-        </a>
-    </main>
+    <script>
+        // ランダム生成用のアイデアストック
+        const randomIdeas = [
+            "画面を連打してカエルを限界まで高く飛ばすジャンプゲーム",
+            "上から落ちてくる寿司ネタをひたすらシャリにスワイプで合わせるゲーム",
+            "左右から迫ってくる障害物を避けて猫を走らせるエンドレスラン",
+            "1画面のシンプルなゴルフパター（カップに入れるだけ）",
+            "光ったパネルの順番を覚える記憶力テストゲーム",
+            "画面のどこかに隠れたお宝を制限時間内にタップで探す宝探し",
+            "落ちてくる隕石をタップして迎撃するミサイル防衛ゲーム"
+        ];
 
-    <footer>
-        <p>&copy; PIXEL PARK (No Ads)</p>
-    </footer>
+        function insertRandomIdea() {
+            const input = document.getElementById('gameIdeaInput');
+            const randomIndex = Math.floor(Math.random() * randomIdeas.length);
+            input.value = randomIdeas[randomIndex];
+            document.getElementById('statusMsg').textContent = "🎲 ランダムなアイデアをセットしました！";
+        }
 
+        async function requestNewGame() {
+            const input = document.getElementById('gameIdeaInput');
+            const status = document.getElementById('statusMsg');
+            const idea = input.value.trim();
+
+            if (!idea) {
+                status.textContent = "⚠️ アイデアを入力するか、「おまかせ」を押してね！";
+                return;
+            }
+
+            status.textContent = `🤖 「${idea}」を構築・デプロイ中...`;
+
+            try {
+                // 将来的にVercel等のAPI (`/api/generate`) を繋ぐ場合のコード
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idea })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    status.textContent = `✨ 成功！数秒後にサイトが更新されます`;
+                    input.value = "";
+                } else {
+                    status.textContent = `❌ エラー: ${result.error || '処理に失敗しました'}`;
+                }
+            } catch (e) {
+                // まだバックエンドAPIが未設定（デモ状態）の場合のフォールバック
+                setTimeout(() => {
+                    status.textContent = "💡 バックエンドAPI未設定です（UIのモック動作中）";
+                }, 1000);
+            }
+        }
+    </script>
 </body>
 </html>
